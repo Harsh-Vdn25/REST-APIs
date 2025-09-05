@@ -17,8 +17,7 @@ const {
     getComments,
     postComment,
     updateComment,
-    deleteComment,
-    getComment
+    deleteComment
 } = require('../controllers/commentController')
 const { auth } = require('../middleware/Auth')
 
@@ -32,8 +31,7 @@ PostRouter.delete('/delete/:id', auth, DeleteBlog);
 //Comments
 PostRouter.post('/comment/:id', auth, checkCommentreq,checkPost, postComment);
 PostRouter.get('/comment/:id', auth,checkPost, getComments);//Read all comments on a post 
-PostRouter.put('/comment/:id', auth, checkPost,updateComment);
-PostRouter.delete('/comment/:id', auth,checkPost, deleteComment);
-// PostRouter.get('/comment/:id', auth,checkPost, getComment)//Read a single comment 
+PostRouter.put('/comment/:id/:cid', auth,checkCommentreq, checkPost,updateComment);
+PostRouter.delete('/comment/:id/:cid', auth,checkPost, deleteComment);
 
 module.exports = PostRouter;

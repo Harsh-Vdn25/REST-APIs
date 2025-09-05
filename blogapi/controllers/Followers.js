@@ -3,6 +3,15 @@ async function Follow(req,res){
     const userId=req.userId;
     let creatorId=req.params.id;
     try{
+        const isFollowing=await FollowModel.findOne({
+            userId:userId,
+            CreatorId:creatorId
+        })
+        if(isFollowing){
+            return res.status(400).json({
+                message:"You are already following him."
+            })
+        } 
         const response=await FollowModel.create({
             userId:userId,
             CreatorId:creatorId

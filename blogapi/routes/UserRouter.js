@@ -1,7 +1,7 @@
 const {bcrypt,jwt,z}=require('../config');
 const express=require('express');
 const userRouter=express.Router();
-const {UserModel}=require('../db');
+const {UserModel,CommentModel}=require('../db');
 const JWT_SECRET=process.env.JWT_SECRET;
 const {Follow,UnFollow}=require('../controllers/Followers');
 const {auth,checkInput,checkSigninInput}=require('../middleware/Auth')
@@ -41,6 +41,26 @@ userRouter.post('/signin',checkSigninInput,async(req,res)=>{
     })
 });
 
+userRouter.get('/comments',auth,async function(req,res){
+    const userId=req.userId;
+    try{
+        const response=await CommentModel.find({
+            CommenterId:userId
+        })
+        if(!response){
+            return res.status(400).json({
+                message:"No Comments"
+            })
+        }
+        const comments=response.map(c=>({
+            Comment:c.Comment,
+            PostId:c.PostId
+        }))
+        res.status(200).json(comments);
+    }catch(err){
+        res.status(500).json({message:err.message});
+    }
+})
 
 userRouter.post('/follow/:id',auth,Follow);
 userRouter.delete('/unfollow/:id',auth,UnFollow);
