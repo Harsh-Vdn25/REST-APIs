@@ -28,10 +28,11 @@ function checkCommentreq(req, res, next) {
 
 //check if post exists
 async function checkPost(req, res, next) {
-    const postId=req.params.id;
+    const blogId=req.params.pid;
+    console.log(blogId);
     try {
         const Blog = await BlogModel.findOne({
-            _id: postId
+            _id: blogId
         })
         if (!Blog) {
             return res.status(404).json({ messge: "The blog requested doesn't exist." })
@@ -41,8 +42,23 @@ async function checkPost(req, res, next) {
         res.status(500).json({message:err.message});
     }
 }
+
+//Check if the user wants to delete/update his own post
+async function checkUserBlog(req,res,next){
+    const blogId=req.params.pid;
+    const userId=req.userId;
+    const Userblog = await BlogModel.findOne({ 
+        _id:blogId,
+        userId: userId
+    })
+    if (!Userblog) {
+        return res.status(401).json({ message: "You dont have access to this blog" });
+    }
+    next();
+}
 module.exports = {
     InputCheck,
     checkCommentreq,
-    checkPost
+    checkPost,
+    checkUserBlog
 }

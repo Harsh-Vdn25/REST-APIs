@@ -1,7 +1,7 @@
 const {CommentModel,BlogModel}=require('../db');
 
 async function postComment(req,res){
-    const postId=req.params.id;
+    const postId=req.params.pid;
     const {Comment}=req.body;
     const userId=req.userId;
     try{
@@ -17,7 +17,7 @@ async function postComment(req,res){
     }
 }
 async function getComments(req,res){
-    const postId=req.params.id;
+    const postId=req.params.pid;
     try{
         const response=await CommentModel.find({
             PostId:postId
@@ -32,18 +32,19 @@ async function getComments(req,res){
     }
 }
 async function updateComment(req,res){
-    const postId=req.params.id;
+    const postId=req.params.pid;
     const commentId=req.params.cid;
     const {Comment}=req.body;
     const userId=req.userId;
     try{
         const response=await CommentModel.updateOne({
-            _id:commentId,
-            PostId:postId,
-            CommenterId:userId
+            _id:commentId
         },{
             Comment:Comment
         })
+        if(!response){
+            res.status(400).json({message:err.message})
+        }
         const updated=await CommentModel.findOne({
             _id:commentId
         })
@@ -56,18 +57,16 @@ async function updateComment(req,res){
     }
 }
 async function deleteComment(req,res){
-    const postId=req.params.id;
+    const postId=req.params.pid;
     const userId=req.userId;
     const commentId=req.params.cid;
     try{
         const response=await CommentModel.deleteOne({
-            _id:commentId,
-            PostId:postId,
-            CommenterId:userId
+            _id:commentId
         })
         if(!response){
             res.status(404).json({
-                message:"Comment does not exist"
+                message:err.message
             })
         }
         res.status(200).json({

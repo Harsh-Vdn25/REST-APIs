@@ -5,6 +5,7 @@ const {UserModel,CommentModel}=require('../db');
 const JWT_SECRET=process.env.JWT_SECRET;
 const {Follow,UnFollow}=require('../controllers/Followers');
 const {auth,checkInput,checkSigninInput}=require('../middleware/Auth')
+const checkFollowReq=require('../middleware/followmidware');
 
 userRouter.post('/signup',checkInput,async (req,res)=>{
     const {email,password,firstName,lastName}=req.body;
@@ -62,7 +63,7 @@ userRouter.get('/comments',auth,async function(req,res){
     }
 })
 
-userRouter.post('/follow/:id',auth,Follow);
-userRouter.delete('/unfollow/:id',auth,UnFollow);
+userRouter.post('/follow/:id',auth,checkFollowReq,Follow);
+userRouter.delete('/unfollow/:id',auth,checkFollowReq,UnFollow);
 
 module.exports=userRouter;
